@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="paper" data-font="song">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="墨读">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#F6F3EC">
+<title>墨读</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/icon-180.png">
+<script>
+/* 状态栏文字颜色：浅色主题要深色字（default），夜间要浅色字（black-translucent）。
+   iOS 在启动时读这个 meta，所以放在最前面按已存设置改掉。 */
+try {
+  var _t = JSON.parse(localStorage.getItem('modu.settings.v1') || '{}').theme;
+  if (_t === 'night') document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]').setAttribute('content', 'black-translucent');
+} catch (e) {}
+</script>
+<link rel="stylesheet" href="css/font-kai.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+
+<!-- ───────── 书架 ───────── -->
+<section id="shelf" class="view on">
+  <header class="head">
+    <div>
+      <h1>墨读</h1>
+      <p id="shelf-sub">正在收回你的书架…</p>
+    </div>
+    <button class="round-btn" id="btn-more" aria-label="切换夜间模式">
+      <svg viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a6.8 6.8 0 0 0 10.7 10.7z"/></svg>
+    </button>
+  </header>
+
+  <div id="continue-card"></div>
+
+  <div class="sec-head">
+    <h2>我的书架</h2>
+    <span id="book-count"></span>
+  </div>
+  <div id="grid" class="grid"></div>
+  <div class="tail-note">公版书 · Project Gutenberg 整理</div>
+</section>
+
+<!-- ───────── 阅读器 ───────── -->
+<section id="reader" class="view">
+  <div id="viewport"><div id="clip"><div id="flow"></div></div></div>
+
+  <div class="rd-ui" id="rd-top">
+    <button class="ico" id="rd-back" aria-label="返回">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="rd-title"><b id="rd-book">书名</b><i id="rd-chapter">章节</i></div>
+    <button class="ico" id="rd-more" aria-label="目录">
+      <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    </button>
+  </div>
+
+  <div class="rd-ui" id="rd-bottom">
+    <div class="rd-meta"><span id="rd-count">第 1 章</span><span id="rd-page">1 / 1</span></div>
+    <input id="rd-slider" type="range" min="0" max="1" value="0" step="1" aria-label="进度">
+    <div class="rd-tools">
+      <button class="tool" data-act="toc"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg><span>目录</span></button>
+      <button class="tool" data-act="prev"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg><span>上一章</span></button>
+      <button class="tool" data-act="next"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg><span>下一章</span></button>
+      <button class="tool" data-act="style"><span class="aa">Aa</span><span>字体</span></button>
+      <button class="tool" data-act="theme"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg><span>背景</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── 目录抽屉 ───────── -->
+<aside id="toc" class="drawer">
+  <div class="dr-head"><h3>目录</h3><span id="toc-count"></span></div>
+  <div class="dr-body" id="toc-list"></div>
+</aside>
+
+<!-- ───────── 设置面板 ───────── -->
+<div id="panel" class="sheet">
+  <div class="sh-head"><h3>阅读设置</h3><button id="panel-done">完成</button></div>
+  <div class="row">
+    <label>字号</label>
+    <div class="stepper">
+      <span class="aa-s">A</span>
+      <input id="opt-fs" type="range" min="14" max="25" step="1">
+      <span class="aa-l">A</span>
+    </div>
+  </div>
+  <div class="row">
+    <label>行距</label>
+    <div class="seg" id="opt-lh">
+      <button data-v="1.6">紧凑</button><button data-v="1.85">标准</button><button data-v="2.1">宽松</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>字体</label>
+    <div class="seg" id="opt-font">
+      <button data-v="song">宋体</button><button data-v="hei">黑体</button><button data-v="kai">楷体</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>背景</label>
+    <div class="swatches" id="opt-theme">
+      <button data-v="paper" style="--c:#F6F3EC;--t:#22201D">纸白</button>
+      <button data-v="sepia" style="--c:#EFE4CE;--t:#3B3225">米黄</button>
+      <button data-v="green" style="--c:#CFE3D2;--t:#24352A">护眼</button>
+      <button data-v="night" style="--c:#131312;--t:#C9C5BA">夜间</button>
+    </div>
+  </div>
+</div>
+
+<div id="mask" class="mask"></div>
+<div id="toast"></div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

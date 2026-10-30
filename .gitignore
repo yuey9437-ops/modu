@@ -1,0 +1,9 @@
+# 开发/本地临时文件，不进仓库、不上 Pages
+tools/cloudflared.exe
+.tmp_shot/
+_preview/
+*.zip
+公网地址.txt
+cf.log
+srv.log
+assets/books/_raw/
