@@ -1,5 +1,5 @@
 /* 墨读 · Service Worker（离线可用） */
-const VER = 'modu-v3';
+const VER = 'modu-v5';
 const SHELL = [
   './',
   './index.html',
@@ -10,6 +10,8 @@ const SHELL = [
   './js/store.js',
   './js/shelf.js',
   './js/reader.js',
+  './js/comics.js',
+  './js/comic.js',
   './js/ui.js',
   './assets/books/index.json',
   './assets/icons/icon-192.png',

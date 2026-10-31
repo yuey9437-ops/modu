@@ -33,9 +33,14 @@ try {
       <h1>墨读</h1>
       <p id="shelf-sub">正在收回你的书架…</p>
     </div>
-    <button class="round-btn" id="btn-more" aria-label="切换夜间模式">
-      <svg viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a6.8 6.8 0 0 0 10.7 10.7z"/></svg>
-    </button>
+    <div class="head-btns">
+      <button class="round-btn" id="btn-import" aria-label="导入漫画">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="round-btn" id="btn-more" aria-label="切换夜间模式">
+        <svg viewBox="0 0 24 24"><path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a6.8 6.8 0 0 0 10.7 10.7z"/></svg>
+      </button>
+    </div>
   </header>
 
   <div id="continue-card"></div>
@@ -71,6 +76,30 @@ try {
       <button class="tool" data-act="next"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg><span>下一章</span></button>
       <button class="tool" data-act="style"><span class="aa">Aa</span><span>字体</span></button>
       <button class="tool" data-act="theme"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 0 1 0 16z" fill="currentColor" stroke="none"/></svg><span>背景</span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ───────── 漫画阅读器 ───────── -->
+<section id="comic" class="view">
+  <div id="cm-stage"><img id="cm-img" alt="" draggable="false"></div>
+
+  <div class="rd-ui" id="cm-top">
+    <button class="ico" id="cm-back" aria-label="返回">
+      <svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>
+    </button>
+    <div class="rd-title"><b id="cm-count">书名</b><i id="cm-sub"></i></div>
+  </div>
+
+  <div class="rd-ui" id="cm-bottom">
+    <div class="rd-meta"><span id="cm-count2"></span><span id="cm-page">1 / 1</span></div>
+    <input id="cm-slider" type="range" min="0" max="0" value="0" step="1" aria-label="页码">
+    <div class="rd-tools">
+      <button class="tool" data-cm="first"><svg viewBox="0 0 24 24"><path d="M18 6L9 12l9 6M6 5v14"/></svg><span>首页</span></button>
+      <button class="tool" data-cm="prev"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg><span>上一页</span></button>
+      <button class="tool" data-cm="next"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg><span>下一页</span></button>
+      <button class="tool" data-cm="rtl"><svg viewBox="0 0 24 24"><path d="M7 7h10v10"/><path d="M17 7l-9 9"/></svg><span>方向</span></button>
+      <button class="tool" data-cm="del"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg><span>删除</span></button>
     </div>
   </div>
 </section>
@@ -114,6 +143,25 @@ try {
     </div>
   </div>
 </div>
+
+<div id="import-sheet" class="sheet">
+  <div class="sh-head"><h3>导入漫画</h3><button id="import-cancel">取消</button></div>
+  <div class="imp">
+    <button class="imp-item" id="pick-zip">
+      <b>CBZ / ZIP 压缩包</b>
+      <span>一包一本，自动按文件名排序</span>
+    </button>
+    <button class="imp-item" id="pick-img">
+      <b>选图片 / 文件夹</b>
+      <span>可以一次多选，按文件名排序成一本</span>
+    </button>
+    <p class="imp-note">全程在本机解压，不上传服务器</p>
+  </div>
+</div>
+
+<input type="file" id="file-zip" accept=".cbz,.zip,application/zip,application/x-cbz,application/octet-stream" multiple hidden>
+<input type="file" id="file-img" accept="image/*" multiple hidden>
+<input type="file" id="file-dir" webkitdirectory directory multiple hidden>
 
 <div id="mask" class="mask"></div>
 <div id="toast"></div>
