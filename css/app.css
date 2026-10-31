@@ -371,10 +371,13 @@ body { touch-action: manipulation; }
 .book.add .cv span { font-size: 26px; font-weight: 300; color: var(--ink2); line-height: 1; }
 .book.add .tt { color: var(--ink2); }
 
-#comic { background: #0B0B0C; overflow: hidden; }
+#comic { --cm-bg: #0B0B0C; background: var(--cm-bg); overflow: hidden; }
+#comic[data-bg="white"] { --cm-bg: #FFFFFF; }
+#comic[data-bg="paper"] { --cm-bg: #EFE4CE; }
 #cm-stage {
   position: absolute; inset: 0; display: grid; place-items: center;
-  overflow: hidden; touch-action: none; background: #0B0B0C;
+  overflow: hidden; touch-action: none; background: var(--cm-bg);
+  transition: background .2s var(--ease);
 }
 #cm-img {
   max-width: 100%; max-height: 100%; display: block;

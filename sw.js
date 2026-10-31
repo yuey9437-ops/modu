@@ -1,5 +1,5 @@
 /* 墨读 · Service Worker（离线可用） */
-const VER = 'modu-v5';
+const VER = 'modu-v6';
 const SHELL = [
   './',
   './index.html',

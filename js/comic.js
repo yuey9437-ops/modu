@@ -16,7 +16,56 @@ let shown = false;
 let hideTimer = 0;
 
 function cfg() {
-  try { return Object.assign({ rtl: false }, JSON.parse(localStorage.getItem(CKEY) || '{}')); } catch (e) { return { rtl: false }; }
+  try { return Object.assign({ rtl: false, bg: 'auto' }, JSON.parse(localStorage.getItem(CKEY) || '{}')); } catch (e) { return { rtl: false, bg: 'auto' }; }
+}
+
+const BG_MODES = [
+  { k: 'auto',  t: '背景：自动（跟页面底色）' },
+  { k: 'dark',  t: '背景：纯黑' },
+  { k: 'white', t: '背景：纯白' },
+  { k: 'paper', t: '背景：米黄' }
+];
+
+/* 取页面外圈颜色当背景，让「填不满」的黑边消失 */
+const bgCanvas = document.createElement('canvas');
+function sampleColor(img) {
+  try {
+    const S = 32;
+    bgCanvas.width = S; bgCanvas.height = S;
+    const ctx = bgCanvas.getContext('2d', { willReadFrequently: true });
+    ctx.clearRect(0, 0, S, S);
+    ctx.drawImage(img, 0, 0, S, S);
+    const d = ctx.getImageData(0, 0, S, S).data;
+    // 取四个角各 3x3 的小块——页边空白几乎总在这里，最接近真实底色
+    const blocks = [[0, 0], [S - 3, 0], [0, S - 3], [S - 3, S - 3]];
+    let r = 0, g = 0, b = 0, n = 0;
+    for (const [bx, by] of blocks) {
+      for (let y = by; y < by + 3; y++) {
+        for (let x = bx; x < bx + 3; x++) {
+          const i = (y * S + x) * 4;
+          if (d[i + 3] < 8) continue;
+          r += d[i]; g += d[i + 1]; b += d[i + 2]; n++;
+        }
+      }
+    }
+    if (!n) return null;
+    r /= n; g /= n; b /= n;
+    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+    if (lum > 240) return '#FFFFFF';
+    if (lum < 18) return '#0B0B0C';
+    return `rgb(${Math.round(r)},${Math.round(g)},${Math.round(b)})`;
+  } catch (e) { return null; }
+}
+
+function applyBg(img) {
+  const el = $('#comic');
+  const mode = cfg().bg || 'auto';
+  el.dataset.bg = mode;
+  el.style.removeProperty('--cm-bg');
+  if (mode === 'auto') {
+    const c = img && img.naturalWidth ? sampleColor(img) : null;
+    if (c) el.style.setProperty('--cm-bg', c);
+  }
 }
 function saveCfg(c) { try { localStorage.setItem(CKEY, JSON.stringify(c)); } catch (e) {} }
 
@@ -33,6 +82,7 @@ export async function openComic(m) {
   const p = getProgress(m.id);
   if (p && Number.isInteger(p.page) && p.page < m.pageCount) page = p.page;
 
+  applyBg(null);
   $('#cm-slider').max = String(Math.max(0, m.pageCount - 1));
   $('#comic').classList.add('on');
   shown = true;
@@ -64,6 +114,7 @@ async function show(i, dir = 0) {
     img.onload = img.onerror = () => r();
   });
   img.classList.add('in');
+  applyBg(img);
   reset(1);
   updateUi();
   saveProgress();
@@ -154,7 +205,11 @@ function clampPan() {
 
 let g = null;
 
+let uiBound = false;
+
 function bindUi() {
+  if (uiBound) return;          // 只绑一次（initComic 可能被调用多次）
+  uiBound = true;
   const stage = $('#cm-stage');
 
   stage.addEventListener('touchstart', (e) => {
@@ -237,6 +292,15 @@ function bindUi() {
     const i = Number(e.target.value);
     if (Number.isInteger(i)) show(i);
   });
+  $('#cm-bg').addEventListener('click', () => {
+    const c = cfg();
+    const i = BG_MODES.findIndex((m) => m.k === (c.bg || 'auto'));
+    const nx = BG_MODES[(i + 1) % BG_MODES.length];
+    c.bg = nx.k; saveCfg(c);
+    applyBg($('#cm-img'));
+    toast(nx.t);
+  });
+
   document.querySelectorAll('[data-cm]').forEach((b) => {
     b.addEventListener('click', async () => {
       const k = b.dataset.cm;
